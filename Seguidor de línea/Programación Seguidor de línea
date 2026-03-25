@@ -1,0 +1,32 @@
+# Primero importa las librerías necesarias
+# Código de prueba de motores (opcional)
+robotbit.motor_run(robotbit.Motors.M1A, 255)
+basic.pause(1000)
+robotbit.motor_run(robotbit.Motors.M1A, 0)
+basic.pause(1000)
+robotbit.motor_run(robotbit.Motors.M1B, 255)
+basic.pause(1000)
+robotbit.motor_run(robotbit.Motors.M1B, 0)
+basic.pause(1000)
+# Iniciar el bucle principal
+
+def on_forever():
+    # Sensor en P14 - Motor M1B (derecho)
+    if pins.digital_read_pin(DigitalPin.P14) == 1:
+        robotbit.motor_run(robotbit.Motors.M1A, 100)
+    elif pins.digital_read_pin(DigitalPin.P14) == 0 and pins.digital_read_pin(DigitalPin.P15) == 1:
+        robotbit.motor_run(robotbit.Motors.M1A, 75)
+        robotbit.motor_run(robotbit.Motors.M1B, 0)
+        basic.pause(500)
+    else:
+        robotbit.motor_run(robotbit.Motors.M1A, 0)
+    # Sensor en P15 - Motor M1A (izquierdo)
+    if pins.digital_read_pin(DigitalPin.P15) == 1:
+        robotbit.motor_run(robotbit.Motors.M1B, -100)
+    elif pins.digital_read_pin(DigitalPin.P15) == 0 and pins.digital_read_pin(DigitalPin.P14) == 1:
+        robotbit.motor_run(robotbit.Motors.M1B, -75)
+        robotbit.motor_run(robotbit.Motors.M1A, 0)
+        basic.pause(500)
+    else:
+        robotbit.motor_run(robotbit.Motors.M1B, 0)
+basic.forever(on_forever)
