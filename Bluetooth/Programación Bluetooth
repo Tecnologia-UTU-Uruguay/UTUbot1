@@ -1,0 +1,88 @@
+# Variables para Bluetooth
+modo_manual = True
+
+def parar_motores():
+    robotbit.motor_run(robotbit.Motors.M1A, 0)
+    robotbit.motor_run(robotbit.Motors.M1B, 0)
+
+def avanzar():
+    robotbit.motor_run(robotbit.Motors.M1A, 255)
+    robotbit.motor_run(robotbit.Motors.M1B, -255)
+    basic.show_leds("""
+        . . # . .
+        . # # # .
+        # . # . #
+        . . # . .
+        . . # . .
+    """)
+
+def retroceder():
+    robotbit.motor_run(robotbit.Motors.M1A, -175)
+    robotbit.motor_run(robotbit.Motors.M1B, 175)
+    basic.show_leds("""
+        . . # . .
+        . . # . .
+        # . # . #
+        . # # # .
+        . . # . .
+    """)
+
+def girar_izquierda():
+    robotbit.motor_run(robotbit.Motors.M1A, 175)
+    robotbit.motor_run(robotbit.Motors.M1B, 175)
+    basic.show_leds("""
+        . . # . .
+        . # . . .
+        # # # # #
+        . # . . .
+        . . # . .
+    """)
+
+def girar_derecha():
+    robotbit.motor_run(robotbit.Motors.M1A, -175)
+    robotbit.motor_run(robotbit.Motors.M1B, -175)
+    basic.show_leds("""
+        . . # . .
+        . . . # .
+        # # # # #
+        . . . # .
+        . . # . .
+    """)
+
+def on_bluetooth_connected():
+    basic.show_icon(IconNames.HAPPY)
+    basic.pause(1000)
+    basic.clear_screen()
+bluetooth.on_bluetooth_connected(on_bluetooth_connected)
+
+def on_bluetooth_disconnected():
+    basic.show_icon(IconNames.SAD)
+    parar_motores()
+bluetooth.on_bluetooth_disconnected(on_bluetooth_disconnected)
+
+def on_uart_data_received():
+    data = bluetooth.uart_read_until(serial.delimiters(Delimiters.HASH))
+    data = data.slice(0, -1)  # Remover el carácter #
+    
+    if data == "4":  # Adelante
+        avanzar()
+    elif data == "3":  # Atrás
+        retroceder()
+    elif data == "1":  # Izquierda
+        girar_izquierda()
+    elif data == "2":  # Derecha
+        girar_derecha()
+    elif data == "5":  # Parar
+        parar_motores()
+        basic.clear_screen()
+
+bluetooth.on_uart_data_received(serial.delimiters(Delimiters.HASH), on_uart_data_received)
+
+# Inicialización
+def on_start():
+    bluetooth.start_uart_service()
+    basic.show_icon(IconNames.HEART)
+    basic.pause(1000)
+    basic.clear_screen()
+
+on_start()
